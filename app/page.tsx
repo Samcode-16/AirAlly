@@ -2,6 +2,8 @@
 import { FormEvent, useMemo, useState } from "react";
 import { aqiBand, type Hour } from "@/lib/impact";
 import type { Plan } from "@/lib/llm";
+import type { ChatProfile } from "@/lib/chat";
+import ChatPanel from "@/components/ChatPanel";
 
 type Result = {
   air: { place: string; pm25: number; pm10: number; aqi: number; hours: Hour[]; demo: boolean };
@@ -131,6 +133,7 @@ export default function Home() {
   const [city, setCity] = useState("Delhi");
   const [notesLen, setNotesLen] = useState(0);
   const [res, setRes] = useState<Result | null>(null);
+  const [profile, setProfile] = useState<ChatProfile | null>(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState<TabKey>("all");
@@ -152,29 +155,30 @@ export default function Home() {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
+    const payload = {
+      city: f.get("city"),
+      members: f.getAll("members"),
+      commute: f.get("commute"),
+      cooking: f.get("cooking"),
+      budget: f.get("budget"),
+      language: f.get("language"),
+    } as ChatProfile;
     setBusy(true);
     setErr("");
     setRes(null);
+    setProfile(null);
     setDone({});
     setTab("all");
     setSelectedHour(null);
     const r = await fetch("/api/plan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        city: f.get("city"),
-        members: f.getAll("members"),
-        commute: f.get("commute"),
-        cooking: f.get("cooking"),
-        budget: f.get("budget"),
-        language: f.get("language"),
-        notes: f.get("notes") || undefined,
-      }),
+      body: JSON.stringify({ ...payload, notes: f.get("notes") || undefined }),
     }).catch(() => null);
     setBusy(false);
     if (!r) return setErr("Network error — please check your connection and try again.");
     const j = await r.json().catch(() => null);
-    if (r.ok && j) setRes(j);
+    if (r.ok && j) { setRes(j); setProfile(payload); }
     else setErr(j?.error ?? "Something went wrong.");
   }
 
@@ -622,6 +626,7 @@ export default function Home() {
                   keys in <code>.env</code> and try again.
                 </div>
               )}
+              {profile && <ChatPanel profile={profile} />}
             </>
           )}
         </section>

@@ -1014,3 +1014,16 @@ fieldset {
     break-inside: avoid;
   }
 }
+
+/* ---- Chat ---- */
+.chat-panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1rem; margin-top:1.25rem; }
+.chat-hint { color:var(--muted); margin:.2rem 0 .8rem; }
+.chat-log { max-height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:.5rem; }
+.chat-msg { margin:0; padding:.6rem .8rem; border-radius:10px; background:var(--surface-2); }
+.chat-msg.user { background:var(--accent-soft); }
+.chat-suggest { display:flex; flex-wrap:wrap; gap:.5rem; margin:.6rem 0; }
+.chat-chip { min-height:44px; padding:.4rem .8rem; border:1px solid var(--border); border-radius:999px; background:var(--surface-2); color:inherit; font:inherit; cursor:pointer; }
+.chat-form { display:flex; gap:.5rem; margin:.6rem 0; }
+.chat-form input { flex:1; min-height:44px; padding:.5rem .8rem; font:inherit; border:2px solid var(--border); border-radius:8px; background:var(--surface); color:inherit; }
+.sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+@media print { .chat-panel { display:none; } }
